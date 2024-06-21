@@ -7,7 +7,7 @@
 - [Binary Search Tree](https://en.wikipedia.org/wiki/Binary_search_tree)
 - [Data structures: Binary Tree](https://www.youtube.com/watch?v=H5JubkIy_p8)
 ## Learning Objectives
-At the end of this project, you are expected to be able to [explain to anyone](https://fs.blog/feynman-learning-technique/), without the help of Google:
+At the end of this project, you are expected to be able to [explain to anyone](https://fs.blog/feynman-learning-technique/), **without the help of Google**:
 ### General
 - What is a binary tree
 - What is the difference between a binary tree and a Binary Search Tree
