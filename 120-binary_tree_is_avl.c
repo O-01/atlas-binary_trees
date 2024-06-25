@@ -2,6 +2,8 @@
 
 int tree_height(const binary_tree_t *tree);
 int is_bst(const binary_tree_t *tree);
+int max_value(const binary_tree_t *tree);
+int min_value(const binary_tree_t *tree);
 
 /**
  * binary_tree_is_avl - Function to test if a tree is an AVL tree
@@ -57,8 +59,8 @@ int is_bst(const binary_tree_t *tree)
 	if (!tree)
 		return (1);
 
-	if ((tree->left && tree->n < tree->left->n) ||
-		(tree->right && tree->n > tree->right->n))
+	if ((tree->left && max_value(tree->left) > tree->n) ||
+		(tree->right && min_value(tree->right) < tree->n))
 		return (0);
 	if (tree->parent &&
 		((tree == tree->parent->right &&
@@ -70,4 +72,40 @@ int is_bst(const binary_tree_t *tree)
 	if (!is_bst(tree->left) || !is_bst(tree->right))
 		return (0);
 	return (1);
+}
+
+/**
+ * max_value- finds the highest value in Tree
+ * @tree: Tree to check
+ * Return: Highest value
+ */
+int max_value(const binary_tree_t *tree)
+{
+	int left = 0, right = 0, max = 0;
+
+	if (!tree)
+		return (INT_MIN);
+	left = max_value(tree->left);
+	right = max_value(tree->right);
+
+	max = left > right ? left : right;
+	return (max < tree->n ? tree->n : max);
+}
+
+/**
+ * min_value- finds the min value in Tree
+ * @tree: Tree to check
+ * Return: min value
+ */
+int min_value(const binary_tree_t *tree)
+{
+	int left = 0, right = 0, min = 0;
+
+	if (!tree)
+		return (INT_MAX);
+	left = min_value(tree->left);
+	right = min_value(tree->right);
+
+	min = left < right ? left : right;
+	return (min > tree->n ? tree->n : min);
 }
