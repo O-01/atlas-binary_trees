@@ -1,7 +1,7 @@
 #include "binary_trees.h"
 
 int tree_height(const binary_tree_t *tree);
-int is_bst(const binary_tree_t *tree);
+int is_bst(const binary_tree_t *tree, int val);
 int max_value(const binary_tree_t *tree);
 int min_value(const binary_tree_t *tree);
 
@@ -22,7 +22,7 @@ int binary_tree_is_avl(const binary_tree_t *tree)
 	if (height < -1 || height > 1)
 		return (0);
 
-	if (!is_bst(tree))
+	if (!is_bst(tree, tree->n))
 		return (0);
 
 	if (tree->left && !binary_tree_is_avl(tree->left))
@@ -52,9 +52,10 @@ int tree_height(const binary_tree_t *tree)
 /**
  * is_bst - Function for checking if a tree is a BST
  * @tree: Tree to check
+ * @val: value of root
  * Return: 1 if tree is BST, 0 if not
  */
-int is_bst(const binary_tree_t *tree)
+int is_bst(const binary_tree_t *tree, int val)
 {
 	if (!tree)
 		return (1);
@@ -69,7 +70,9 @@ int is_bst(const binary_tree_t *tree)
 			tree->right && tree->right->n > tree->parent->n)))
 		return (0);
 
-	if (!is_bst(tree->left) || !is_bst(tree->right))
+	if (tree->left && (val == tree->left->n || !is_bst(tree->left, val)))
+		return (0);
+	if (tree->right && (val == tree->right->n || !is_bst(tree->right, val)))
 		return (0);
 	return (1);
 }
