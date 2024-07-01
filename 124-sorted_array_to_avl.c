@@ -9,11 +9,15 @@
 avl_t *sorted_array_to_avl(int *array, size_t size)
 {
 	int mid = (size - 1) / 2;
-	avl_t *node = binary_tree_node(NULL, array[mid]);
-	avl_t *node_l = NULL, *node_r = NULL;
+	avl_t *node = NULL, *node_l = NULL, *node_r = NULL;
 
 	if (!array || !size)
 		return (NULL);
+	node = binary_tree_node(NULL, array[mid]);
+	if (!node)
+		return (NULL);
+	else if (node && !mid)
+		return (node);
 	node_l = sorted_array_to_avl(array, mid);
 	node_r = sorted_array_to_avl(&array[mid + 1], size - mid - 1);
 	if (node_l)
