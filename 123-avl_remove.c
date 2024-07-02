@@ -25,19 +25,21 @@ avl_t *avl_remove(avl_t *root, int value)
 		}
 		else if (!root->right && root->left)
 		{
-			root->left->parent = root->parent, tmp = root->left, free(root);
-			return (tmp);
+			root->left->parent = root->parent, tmp = root->left;
+			free(root), root = NULL;
+			return (do_balance(tmp, value));
 		}
 		else if (!root->left && root->right)
 		{
-			root->right->parent = root->parent, tmp = root->right, free(root);
-			return (tmp);
+			root->right->parent = root->parent, tmp = root->right;
+			free(root), root = NULL;
+			return (do_balance(tmp, value));
 		}
 		else if (root->right && root->left)
 		{
 			tmp = find_heir(root->right);
-			root->n = tmp->n, free(tmp), tmp = NULL;
-			return (root);
+			root->n = tmp->n, avl_remove(tmp, tmp->n);
+			return (do_balance(root, value));
 		}
 	}
 	if (value < root->n)
@@ -55,13 +57,27 @@ avl_t *avl_remove(avl_t *root, int value)
 avl_t *find_heir(avl_t *node)
 {
 	avl_t *tmp = NULL;
+	static int flag;
+
+	if (!node->left && !node->right && !flag)
+	{
+		flag = 1;
+		node->parent->right = NULL;
+		return (node);
+	}
 	if (!node->left && node->right)
 	{
 		node = binary_tree_rotate_left(node), tmp = node->left, free(node);
+		flag = 0;
 		return (tmp);
 	}
 	else if (!node->left)
+	{
+		node->parent->left = NULL;
+		flag = 0;
 		return (node);
+	}
+	flag = 1;
 	return (find_heir(node->left));
 }
 
