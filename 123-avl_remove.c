@@ -1,7 +1,7 @@
 #include "binary_trees.h"
 
-avl_t *find_heir(avl_t *node);
-static avl_t *do_balance(avl_t *tree, int value);
+static avl_t *find_heir(avl_t *node);
+static avl_t *do_balance(avl_t *tree);
 
 /**
  * avl_remove - Removes a node with specified value from tree
@@ -20,8 +20,6 @@ avl_t *avl_remove(avl_t *root, int value)
 	{
 		if (!root->left && !root->right)
 		{
-			if (root->parent)
-				do_balance(root->parent, root->parent->n);
 			free(root);
 			return (NULL);
 		}
@@ -29,32 +27,26 @@ avl_t *avl_remove(avl_t *root, int value)
 		{
 			root->left->parent = root->parent, tmp = root->left;
 			free(root), root = NULL;
-			if (tmp->parent)
-				do_balance(tmp->parent, tmp->parent->n);
-			return (do_balance(tmp, tmp->n));
+			return (do_balance(tmp));
 		}
 		else if (!root->left && root->right)
 		{
 			root->right->parent = root->parent, tmp = root->right;
 			free(root), root = NULL;
-			if (tmp->parent)
-				do_balance(tmp->parent, tmp->parent->n);
-			return (do_balance(tmp, tmp->n));
+			return (do_balance(tmp));
 		}
 		else if (root->right && root->left)
 		{
 			tmp = find_heir(root->right);
 			root->n = tmp->n, avl_remove(tmp, tmp->n);
-			if (root->parent)
-				do_balance(root->parent, root->parent->n);
-			return (do_balance(root, root->n));
+			return (do_balance(root));
 		}
 	}
 	if (value < root->n)
 		root->left = avl_remove(root->left, value);
 	if (value > root->n)
 		root->right = avl_remove(root->right, value);
-	return (do_balance(root, root->n));
+	return (do_balance(root));
 }
 
 /**
@@ -62,7 +54,7 @@ avl_t *avl_remove(avl_t *root, int value)
  * @node: node to check
  * Return: successor node
  */
-avl_t *find_heir(avl_t *node)
+static avl_t *find_heir(avl_t *node)
 {
 	avl_t *tmp = NULL;
 	static int flag;
@@ -72,13 +64,18 @@ avl_t *find_heir(avl_t *node)
 		node->parent->right = NULL;
 		return (node);
 	}
-	if (!node->left && node->right)
+	if (!node->left && node->right && !flag)
+	{
+		node = binary_tree_rotate_left(node), tmp = node->left, free(node);
+		return (tmp);
+	}
+	if (!node->left && node->right && flag)
 	{
 		node = binary_tree_rotate_left(node), tmp = node->left, free(node);
 		flag = 0;
 		return (tmp);
 	}
-	else if (!node->left)
+	else if (!node->left && flag)
 	{
 		node->parent->left = NULL;
 		flag = 0;
@@ -91,24 +88,28 @@ avl_t *find_heir(avl_t *node)
 /**
  * do_balance - balance binary search tree appropriately, if necessary
  * @tree: tree to be checked and balanced
- * @value: value as reference for determining rotation
  * Return: pointer to rotated tree upon disbalance, otherwise pointer to tree
  */
-static avl_t *do_balance(avl_t *tree, int value)
+static avl_t *do_balance(avl_t *tree)
 {
-	int balance = binary_tree_balance(tree);
+	int balance = 0, l_bal = 0, r_bal = 0;
 
-	if (balance > 1 && value < tree->left->n)
-		return (binary_tree_rotate_right(tree));
-	if (balance < -1 && value > tree->right->n)
-		return (binary_tree_rotate_left(tree));
-	if (balance > 1 && value > tree->left->n)
+	if (!tree)
+		return (NULL);
+	balance = binary_tree_balance(tree);
+	if (balance > 1 && tree->left)
 	{
+		l_bal = binary_tree_balance(tree->left);
+		if (l_bal >= 0)
+			return (binary_tree_rotate_right(tree));
 		tree->left = binary_tree_rotate_left(tree->left);
 		return (binary_tree_rotate_right(tree));
 	}
-	if (balance < -1 && value < tree->right->n)
+	else if (balance < -1 && tree->right)
 	{
+		r_bal = binary_tree_balance(tree->right);
+		if (r_bal <= 0)
+			return (binary_tree_rotate_left(tree));
 		tree->right = binary_tree_rotate_right(tree->right);
 		return (binary_tree_rotate_left(tree));
 	}
