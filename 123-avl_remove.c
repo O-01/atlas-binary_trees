@@ -20,6 +20,8 @@ avl_t *avl_remove(avl_t *root, int value)
 	{
 		if (!root->left && !root->right)
 		{
+			if (root->parent)
+				do_balance(root->parent, root->parent->n);
 			free(root);
 			return (NULL);
 		}
@@ -27,26 +29,32 @@ avl_t *avl_remove(avl_t *root, int value)
 		{
 			root->left->parent = root->parent, tmp = root->left;
 			free(root), root = NULL;
-			return (do_balance(tmp, value));
+			if (tmp->parent)
+				do_balance(tmp->parent, tmp->parent->n);
+			return (do_balance(tmp, tmp->n));
 		}
 		else if (!root->left && root->right)
 		{
 			root->right->parent = root->parent, tmp = root->right;
 			free(root), root = NULL;
-			return (do_balance(tmp, value));
+			if (tmp->parent)
+				do_balance(tmp->parent, tmp->parent->n);
+			return (do_balance(tmp, tmp->n));
 		}
 		else if (root->right && root->left)
 		{
 			tmp = find_heir(root->right);
 			root->n = tmp->n, avl_remove(tmp, tmp->n);
-			return (do_balance(root, value));
+			if (root->parent)
+				do_balance(root->parent, root->parent->n);
+			return (do_balance(root, root->n));
 		}
 	}
 	if (value < root->n)
 		root->left = avl_remove(root->left, value);
 	if (value > root->n)
 		root->right = avl_remove(root->right, value);
-	return (do_balance(root, value));
+	return (do_balance(root, root->n));
 }
 
 /**
@@ -61,7 +69,6 @@ avl_t *find_heir(avl_t *node)
 
 	if (!node->left && !node->right && !flag)
 	{
-		flag = 1;
 		node->parent->right = NULL;
 		return (node);
 	}
