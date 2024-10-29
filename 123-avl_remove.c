@@ -15,7 +15,6 @@ avl_t *avl_remove(avl_t *root, int value)
 
 	if (!root)
 		return (NULL);
-
 	if (value == root->n)
 	{
 		if (!root->left && !root->right)

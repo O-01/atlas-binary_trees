@@ -14,11 +14,9 @@ avl_t *array_to_avl(int *array, size_t size)
 	if (!array)
 		return (NULL);
 	if (!root)
-		root = binary_tree_node(NULL, array[iter]), iter++;
-
-	for (; iter < size; iter++)
+		root = binary_tree_node(NULL, array[iter]), ++iter;
+	for (; iter < size; ++iter)
 		if (!avl_insert(&root, array[iter]))
 			return (NULL);
-
 	return (root);
 }

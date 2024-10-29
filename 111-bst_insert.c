@@ -1,6 +1,5 @@
 #include "binary_trees.h"
 
-
 /**
  * bst_insert - inserts a value in an BST Tree
  * @tree: double pointer to root node of BST tree for inserting the value
@@ -12,10 +11,7 @@ bst_t *bst_insert(bst_t **tree, int value)
 	bst_t *add = NULL;
 
 	if (!*tree)
-	{
-		*tree = (binary_tree_node(NULL, value));
-		return (*tree);
-	}
+		return (*tree = (binary_tree_node(NULL, value)));
 	if (value < (*tree)->n)
 	{
 		if (!(*tree)->left)
